@@ -1,68 +1,51 @@
-// import our require modules
-var express = require("express");
-var bodyparser = require("body-parser");
-var mongoose = require("mongoose");
 
-// create inr
-const app = express()
+var express=require("express")
+var bodyParser=require("body-parser")
+var mongoose=require("mongoose")
 
-// used those  modules 
-app.use(bodyparser.json() );
+const app=express()
+
+app.use(bodyParser.json())
 app.use(express.static('public'))
-app.use(bodyparser.urlencoded ({
+app.use(bodyParser.urlencoded({
     extended:true
 }))
 
-// connecting  the mongo DB (DataBase)
-mongoose.connect('mongodb://localhost:27017/DataBase')
+mongoose.connect('mongodb://localhost:27017/Database')
 var db=mongoose.connection
-db.on("error",() => console.log("Error in connecting to DataBase"))
-db.on("open" , () => console.log('Connected to DataBase'))
+db.on('error',()=> console.log("Error in Connecting to Database"))
+db.once('open',()=> console.log("Connected to Database"))
 
+app.post("/sign_up",(req,res) => {
+    var name= req.body.name
+    var age=req.body.age
+    var email=req.body.email
+    var phno=req.body.phno
+    var gender=req.body.gender
+    var password=req.body.password
 
-// taken the value  as a input 
-app.post("Sing_up" , (req , res) => {
-    var name = req.body.name
-    var age = req.body.age
-    var email = req.body.email
-    var phone = req.body.phone
-    var gender = req.body.gender
-    var password = req.body.password
-
-
-    //  create an object 
     var data={
         "name":name,
         "age":age,
         "email":email,
-        "phone":phone,
+        "phno":phno,
         "gender":gender,
         "password":password
     }
-
-    //here check the data if we get any error then get error else show this console message !
-    db.collection('user').insertData(data,(err , collection) => {
+    db.collection('users').insertOne(data,(err,collection) => {
         if(err){
             throw err;
-
         }
-        console.log("Record inserted Sucessfully ");
-        
+        console.log("Record Inserted Succesfully")
     })
-    // then we are going to redirect to  sing up sucessfully 
-     return res.redirect('singup_Sucess.html')
-
-
+    return res.redirect('signup_successful.html')
 })
 
-   // this is used to stablish connection between  locolhost an our file.
-app.get("/",(req , res) => {
+app.get("/",(req,res) => {
     res.set({
-        "Allow-access-Allow-Origin":'*'
+        "Allow-acces-Allow-Origin":'*'
     })
-
     return res.redirect('index.html')
-
 }).listen(3000);
 
-console.log("Listing on the 3000");
+console.log("Listening on port 3000")
